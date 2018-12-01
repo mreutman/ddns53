@@ -54,6 +54,10 @@ run as follows.
 ./ddns53 foo.com
 ```
 
-It's probably best to run this from a cron job to make the most of this tool
-and automate the updating of address if/when your ISP decides to assign a new
-one. However, it remains up to the end user though to make that decision.
+For best results, this tool can be scheduled to run as a `cron` job to
+automatically update the DNS address record if/when your ISP decides to assign
+you a new IP address. For an example, here is an entry in `crontab` to run
+every hour while logging any errors to a local file.
+```
+0 * * * * /home/pi/ddns53 foo.com >> /home/pi/ddns53.log 2>&1
+```

@@ -89,6 +89,6 @@ if __name__ == "__main__":
 
   # Update the public IP address record in Route 53.
   status = set_public_ip(r53, domain, hosted_zone_id, public_ip)
-  if not status
+  if not status:
     print("failed to update public IP address in Route 53")
     sys.exit(1)

@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+
+import os.path
+import boto3
+import datetime
+import requests
+import sys
+
+PUBLIC_IP_RESOLVE_SERVICE_DOMAIN = "http://ifconfig.me/ip"
+AWS_REGION = "us-west-2"
+
+def get_hosted_zone_id(r53, domain):
+  hosted_zone_id = ""
+
+  # Not sure why, but Amazon returns domains with a period at the end. Add one
+  # so we can use this variable for direct comparison.
+  domain = domain + "."
+
+  # Query Route 53 for hosted zones listed under account.
+  r = r53.list_hosted_zones()
+  zones = r["HostedZones"]
+  for zone in zones:
+    if zone["Name"] == domain:
+      hosted_zone_id = os.path.basename(zone["Id"])
+      break
+
+  return hosted_zone_id
+
+def get_public_ip_resolve_service(service_domain):
+  public_ip = ""
+
+  r = requests.get(service_domain)
+  if 200 == r.status_code:
+    public_ip = r.text
+
+  return public_ip
+
+def set_public_ip(r53, domain, hosted_zone_id, public_ip):
+  # Build up the request to Route 53.
+  # See documentation for change_resource_record_sets for info.
+
+  resource_record_set = {}
+  resource_record_set["Name"] = domain + "."
+  resource_record_set["Type"] = "A"
+  resource_record_set["TTL"] = 300
+  resource_record_set["ResourceRecords"] = [ {"Value" : public_ip} ]
+
+  change = {}
+  # Update record or create if it does not exist.
+  change["Action"] = "UPSERT"
+  change["ResourceRecordSet"] = resource_record_set
+
+  time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+  change_batch = {}
+  # Add comment stating update request time.
+  change_batch["Comment"] = "Updated " + time
+  change_batch["Changes"] = [ change, ]
+
+  r = r53.change_resource_record_sets(HostedZoneId=hosted_zone_id,
+                                      ChangeBatch=change_batch)
+
+  if (200 == r['ResponseMetadata']['HTTPStatusCode']):
+    status = True
+  else:
+    status = False
+
+  return status
+
+if __name__ == "__main__":
+  # Check to make sure we have the correct command line arguments.
+  if (2 != len(sys.argv)):
+    cmd = os.path.basename(sys.argv[0])
+    print("USAGE: " + cmd + " [DOMAIN]")
+    sys.exit(1)
+
+  domain = sys.argv[1]
+  r53 = boto3.client("route53")
+
+  # We need the hosted zone id of the domain to update from Route 53.
+  hosted_zone_id = get_hosted_zone_id(r53, domain)
+  if not hosted_zone_id:
+    print("failed to find " + domain + " in Route 53")
+    sys.exit(1)
+
+  # Grab our public IP address (assuming we're behind router) from web service.
+  public_ip = get_public_ip_resolve_service(PUBLIC_IP_RESOLVE_SERVICE_DOMAIN)
+  if not public_ip:
+    print("failed to obtain public IP address")
+    sys.exit(1)
+
+  # Update the public IP address record in Route 53.
+  status = set_public_ip(r53, domain, hosted_zone_id, public_ip)
+  if not status
+    print("failed to update public IP address in Route 53")
+    sys.exit(1)

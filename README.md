@@ -21,9 +21,13 @@ The following steps should briefly outline all that is needed to do in order
 to get this utility to work.
 
 1. Install Python.
-`sudo apt install python3`
+```
+sudo apt install python3
+```
 2. Install boto3.
-`pip3 install boto3`
+```
+pip3 install boto3
+```
 3. Configure AWS IAM user credentials (`~/.aws/credentials`).
 ```
 [default]
@@ -45,3 +49,7 @@ domain hosted in Amazon's Route 53 that is to be updated.
 For example, if the domain `foo.com` is to be targeted, the utlitlity would be
 run as follows.
 `./ddns53 foo.com`
+
+It's probably best to run this from a cron job to make the most of this tool
+and automate the updating of address if/when your ISP decides to assign a new
+one. However, it remains up to the end user though to make that decision.

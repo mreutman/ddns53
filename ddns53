@@ -7,7 +7,6 @@ import requests
 import sys
 
 PUBLIC_IP_RESOLVE_SERVICE_DOMAIN = "http://ifconfig.me/ip"
-AWS_REGION = "us-west-2"
 
 def get_hosted_zone_id(r53, domain):
   hosted_zone_id = ""

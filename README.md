@@ -11,9 +11,10 @@ domain name should point to provided that the domain is managed in Amazon's
 Route 53. In order to acomplish this task, boto3, the official Python library
 for accessing AWS, is leveraged.
 
-Note, this utility is not by any means endoursed by Amazon and may violate the
-terms of service with your internet service provider. The end user assumes
-all responsiblity for the use of this software.
+Note, this utility is not by any means endorsed by Amazon. In addition, use of
+this software may violate the terms of service specified by your internet
+service provider. The end user assumes all responsiblity for the use of this
+software.
 
 ## Set Up
 

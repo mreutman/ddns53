@@ -44,11 +44,15 @@ region=us-west-2
 
 To run the utility from the command line, all that is needed is to provide the
 domain hosted in Amazon's Route 53 that is to be updated.
-`./ddns53 [DOMAIN]`
+```
+./ddns53 [DOMAIN]
+```
 
 For example, if the domain `foo.com` is to be targeted, the utlitlity would be
 run as follows.
-`./ddns53 foo.com`
+```
+./ddns53 foo.com
+```
 
 It's probably best to run this from a cron job to make the most of this tool
 and automate the updating of address if/when your ISP decides to assign a new

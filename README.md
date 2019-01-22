@@ -62,3 +62,12 @@ every hour while logging any errors to a local file.
 ```
 0 * * * * /home/pi/ddns53 foo.com >> /home/pi/ddns53.log 2>&1
 ```
+
+## Future Development
+
+After doing some more digging, it looks like a lot of other domain registrars
+have API access available. Given this is a small program, I'm not totally sure
+if it makes sense to extend it to support other registrars given they will
+definitely have web API differences. On the other hand, it would be interesting
+to have a more generic solution or something that at least supports the major
+players out there. Stay tuned to find out more...

@@ -66,6 +66,9 @@ def set_public_ip(r53, domain, hosted_zone_id, public_ip):
   return status
 
 if __name__ == "__main__":
+  home_dir = os.path.realpath(os.path.dirname(__file__))
+  ip_addr_file = home_dir + "/.ip_addr"
+
   # Check to make sure we have the correct command line arguments.
   if (2 != len(sys.argv)):
     cmd = os.path.basename(sys.argv[0])
@@ -86,6 +89,23 @@ if __name__ == "__main__":
   if not public_ip:
     print("failed to obtain public IP address")
     sys.exit(1)
+
+  print("current public IP address is " + public_ip)
+  prev_public_ip = 0
+
+  if os.path.exists(ip_addr_file):
+    f = open(ip_addr_file,"r")
+    prev_public_ip = f.readline()
+    f.close()
+    print("previous public IP address is " + prev_public_ip)
+
+  if public_ip != prev_public_ip:
+    f = open(ip_addr_file,"w")
+    f.write(public_ip)
+    f.close()
+  else:
+    print("not updating")
+    sys.exit(0)
 
   # Update the public IP address record in Route 53.
   status = set_public_ip(r53, domain, hosted_zone_id, public_ip)

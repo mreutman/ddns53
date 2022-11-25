@@ -63,6 +63,39 @@ every hour while logging any errors to a local file.
 0 * * * * /home/pi/ddns53 foo.com >> /home/pi/ddns53.log 2>&1
 ```
 
+If `systemd` is preferred, the tool can be set up to run by `systemd.timer`.
+
+`/etc/systemd/system/ddns53.service`
+```
+[Unit]
+Description=Updates IP address on AWS Route 53
+Wants=ddns53.timer
+
+[Service]
+Type=oneshot
+ExecStart=/home/anon/Git/ddns53 YOUR_DOMAIN_HERE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target
+```
+
+`/etc/systemd/system/ddns53.timer`
+```
+[Unit]
+Description=Updates IP address on AWS Route 53
+Requires=ddns53.service
+
+[Timer]
+Unit=ddns53.service
+OnBootSec=1min
+OnUnitActiveSec=1h
+RandomizedDelaySec=2min
+
+[Install]
+WantedBy=timers.target
+```
+
 ## Future Development
 
 After doing some more digging, it looks like a lot of other domain registrars
